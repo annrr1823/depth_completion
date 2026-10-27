@@ -1,0 +1,53 @@
+# RGB-Guided Sparse Depth Completion - 默认配置
+# 注意：本配置仅用于理清超参；当前阶段不下载数据、不启动训练。
+
+experiment:
+  name: sagrnet_nyu_500
+  seed: 42
+  output_dir: outputs
+
+data:
+  # HuggingFace: https://huggingface.co/datasets/sayakpaul/nyu_depth_v2
+  dataset_name: sayakpaul/nyu_depth_v2
+  # 本地目录，需含 data/*.tar（由 scripts/download_nyu.py 下载）
+  data_root: data/nyu_depth_v2
+  num_sparse: 500          # 每张图随机采样的有效深度点数
+  image_height: 240        # 训练分辨率（原图约 480x640，常用下采样）
+  image_width: 320
+  min_depth: 0.0           # 有效深度下界（米）；<=0 视为无效
+  max_depth: 10.0          # NYU 室内场景常用裁剪上界
+  num_workers: 4           # 已用 tar 偏移随机读，可用多 worker
+  # max_samples: 512       # 调试时可打开，限制样本数
+
+model:
+  name: sagrnet            # sagrnet | sparse_to_dense
+  in_channels: 5           # RGB(3) + sparse_depth(1) + validity_mask(1)
+  base_channels: 64
+  num_stages: 4
+  use_pretrained_encoder: false  # 可改为 true 使用 ImageNet ResNet 预训练
+
+train:
+  epochs: 50
+  batch_size: 8
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  optimizer: adamw
+  scheduler: cosine
+  loss:
+    type: l1               # l1 | mse | berhu | mixed
+    l1_weight: 1.0
+    mse_weight: 0.0
+    edge_weight: 0.1       # RGB 边缘引导的平滑损失权重（新颖性）
+    sparse_consistency: 0.5  # 在稀疏采样点处强制与输入深度一致
+  grad_clip: 1.0
+  log_interval: 50
+  save_interval: 5
+  val_interval: 1
+
+eval:
+  batch_size: 8
+  metrics: [rmse, abs_rel, delta1]
+
+vis:
+  num_samples: 8
+  cmap: plasma

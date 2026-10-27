@@ -1,0 +1,8 @@
+{
+  "checkpoint": "outputs/checkpoints/sagrnet_nyu_500/epoch_049.pth",
+  "split": "validation",
+  "num_valid_pixels": 49536000,
+  "RMSE": 0.23788301803895992,
+  "Abs_Relative_Difference": 0.03055162275053118,
+  "delta1": 0.9721287548449612
+}

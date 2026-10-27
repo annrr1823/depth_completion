@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+data/nyu_depth_v2/
+outputs/checkpoints/
+outputs/logs/
+*.pth
+.DS_Store
+.idea/
+.vscode/
